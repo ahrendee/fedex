@@ -1,37 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { initFlowbite } from "flowbite";
-import { FedexValidators } from "./components/password-unambiguous.validator";
 import { HttpClientModule } from "@angular/common/http";
-import { JsonPlaceHolderService } from "./services/json-place-holder.service";
-import { Subject, take } from "rxjs";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { RouterOutlet } from '@angular/router';
+import { initFlowbite } from "flowbite";
+import { switchMap, take } from "rxjs";
+import { HeaderComponent } from './components/header/header.component';
 import { SuccessModalComponent } from "./components/success-modal/success-modal.component";
+import { JsonPlaceHolderService, PhotosApiRequest, UsersApiResponse } from "./services/json-place-holder.service";
+import { FedexValidators } from "./validators/password-unique.validator";
+import { emailPattern, passwordPattern } from './validators/validation-patters';
+import { NotificationComponent } from "./components/notification/notification.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ReactiveFormsModule, HttpClientModule, SuccessModalComponent],
+  imports: [RouterOutlet, ReactiveFormsModule, HttpClientModule, HeaderComponent, SuccessModalComponent, NotificationComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  title = 'fedex';
-  fullName: string = '';
-  showSuccessModal!: boolean;
-  apiResult!: object;
+  fullName!: string;
+  showSuccessModal: boolean = false;
+  apiResult!: UsersApiResponse;
+  errorMsg!: string;
 
   signUpForm = this.fb.group({
-      firstName: ['Ronald', [Validators.required]],
-      lastName: ['Pieterse', [Validators.required]],
-      email: ['ronald@ahrendee.com', [
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
+      email: ['', [
         Validators.required,
-        Validators.pattern('[a-zA-Z0–9._-]+@[a-zA-Z0–9.-]+\\.[a-zA-Z]{2,4}')]
+        Validators.pattern(emailPattern)]
       ],
-      password: ['Blablablabla', [
+      password: ['', [
         Validators.required,
         Validators.minLength(8),
-        Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=[^0-9].*).*')]
+        Validators.pattern(passwordPattern)]
       ],
     },
     {
@@ -52,7 +55,6 @@ export class AppComponent implements OnInit {
 
   submitForm() {
     this.signUpForm.markAllAsTouched();
-    console.log(this.signUpForm.value);
 
     if (this.signUpForm.valid) {
       this.callApis();
@@ -68,18 +70,28 @@ export class AppComponent implements OnInit {
   }
 
   private callApis() {
-    console.log('lets call the apis');
-    this.jsonService.callApi({
+    const request: PhotosApiRequest = {
       firstName: this.f.firstName.value as string,
       lastName: this.f.lastName.value as string,
       email: this.f.email.value as string
-    })
-      .pipe(take(1))
-      .subscribe(result => {
-        console.log(`in component:`, result);
-        this.apiResult = result;
-        this.showSuccessModal = true;
-      });
+    }
+
+    this.jsonService.getPhotos(request)
+      .pipe(
+        take(1),
+        switchMap(photosResponse => this.jsonService.getUsers({
+          ...request,
+          thumbnailUrl: photosResponse.thumbnailUrl
+        }))
+      )
+      .subscribe(
+        result => {
+          this.apiResult = result;
+          this.showSuccessModal = true;
+        },
+        error => {
+          this.errorMsg = error;
+        });
   }
 }
 

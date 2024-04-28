@@ -1,7 +1,7 @@
-import {FedexValidators} from "./password-unambiguous.validator";
+import {FedexValidators} from "./password-unique.validator";
 import {AbstractControl} from "@angular/forms";
 
-describe('password', () => {
+describe('Password unique validator', () => {
 
     it('should return error for password === firstName', () => {
         const control = createControl('Japie', 'Krekel', 'Japie');

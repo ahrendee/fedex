@@ -1,6 +1,6 @@
-import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { Observable, Subject, switchMap, takeUntil } from "rxjs";
+import { Injectable } from '@angular/core';
+import { Observable, Subject, take } from "rxjs";
 
 export interface PhotosApiRequest {
   firstName: string;
@@ -8,7 +8,7 @@ export interface PhotosApiRequest {
   email: string;
 }
 
-interface PhotosApiResponse {
+export interface PhotosApiResponse {
   id: number;
   albumId: number;
   title: string;
@@ -16,11 +16,11 @@ interface PhotosApiResponse {
   thumbnailUrl: string;
 }
 
-interface UsersApiRequest extends PhotosApiRequest {
+export interface UsersApiRequest extends PhotosApiRequest {
   thumbnailUrl: string;
 }
 
-interface UsersApiResponse {
+export interface UsersApiResponse {
   id: number;
   firstName: string;
   lastName: string;
@@ -31,7 +31,7 @@ interface UsersApiResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class JsonPlaceHolderService implements OnDestroy {
+export class JsonPlaceHolderService {
   destroy$ = new Subject<void>();
 
   readonly apiUrls = {
@@ -42,19 +42,17 @@ export class JsonPlaceHolderService implements OnDestroy {
   constructor(private httpclient: HttpClient) {
   }
 
-  callApi(request: PhotosApiRequest): Observable<UsersApiResponse> {
+  getPhotos(request: PhotosApiRequest): Observable<PhotosApiResponse> {
     return this.httpclient.get<PhotosApiResponse>(`${this.apiUrls.photos}/${request.lastName.length}`)
       .pipe(
-        takeUntil(this.destroy$),
-        switchMap(result => this.httpclient.post<UsersApiRequest>(this.apiUrls.users, {
-          ...request,
-          thumbnailUrl: result.thumbnailUrl
-        })),
-      ) as Observable<UsersApiResponse>;
+        take(1)
+      ) as Observable<PhotosApiResponse>;
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  getUsers(request: UsersApiRequest): Observable<UsersApiResponse> {
+    return this.httpclient.post<UsersApiResponse>(this.apiUrls.users, request)
+      .pipe(
+        take(1)
+      ) as Observable<UsersApiResponse>;
   }
 }

@@ -1,5 +1,6 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Modal } from "flowbite";
+import { UsersApiResponse } from '../../services/json-place-holder.service';
 
 @Component({
   selector: 'app-success-modal',
@@ -10,20 +11,14 @@ import { Modal } from "flowbite";
 })
 export class SuccessModalComponent implements OnInit {
 
-  @Input() result!: object;
+  @Input() result!: UsersApiResponse;
   @Output() modalClosed = new EventEmitter<void>();
-
-  @ViewChild('infoPopup') modalEl!: HTMLElement;
-
-  jsonResult!: string;
 
   privacyModal!: Modal;
 
   ngOnInit() {
-    this.jsonResult = JSON.stringify(this.result, null, '\t');
-
-    // const modalEl = document.getElementById('info-popup');
-    this.privacyModal = new Modal(this.modalEl, {
+    const modalEl = document.getElementById('success-modal');
+    this.privacyModal = new Modal(modalEl, {
       placement: 'center'
     });
     this.privacyModal.show();
