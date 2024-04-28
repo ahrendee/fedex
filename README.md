@@ -8,17 +8,22 @@ Tailwind: to improve the UX/UI experience.
 
 ### Prerequisites
 
-- Node <= 18.18
-- Yarn <= 1.22
+- Node (tested with 18.18)
+- Yarn (tested with 1.22)
+
+## Install
+
+Run `yarn` to install all the packages.
 
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you
 change any of the source files.
 
-## Build
+## Build project
 
-Run `yarn` to build the project.
+Run `ng build` to build the project. The generated structure will reside in the /dist folder.
+Note that this step is not necessary for local development.
 
 ## Running unit tests
 
