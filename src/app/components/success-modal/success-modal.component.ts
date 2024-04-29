@@ -2,6 +2,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Modal } from "flowbite";
 import { UsersApiResponse } from '../../services/json-place-holder.service';
 
+export interface SuccessModel extends UsersApiResponse {
+  albumId: number;
+  title: string;
+}
+
 @Component({
   selector: 'app-success-modal',
   standalone: true,
@@ -11,7 +16,7 @@ import { UsersApiResponse } from '../../services/json-place-holder.service';
 })
 export class SuccessModalComponent implements OnInit {
 
-  @Input() result!: UsersApiResponse;
+  @Input() result!: SuccessModel;
   @Output() modalClosed = new EventEmitter<void>();
 
   privacyModal!: Modal;

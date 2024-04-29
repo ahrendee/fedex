@@ -3,10 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { RouterOutlet } from '@angular/router';
 import { initFlowbite } from "flowbite";
-import { switchMap, take } from "rxjs";
+import { switchMap, take, tap } from "rxjs";
 import { HeaderComponent } from './components/header/header.component';
-import { SuccessModalComponent } from "./components/success-modal/success-modal.component";
-import { JsonPlaceHolderService, PhotosApiRequest, UsersApiResponse } from "./services/json-place-holder.service";
+import { SuccessModalComponent, SuccessModel } from "./components/success-modal/success-modal.component";
+import { JsonPlaceHolderService, PhotosApiResponse } from "./services/json-place-holder.service";
 import { FedexValidators } from "./validators/password-unique.validator";
 import { emailPattern, passwordPattern } from './validators/validation-patters';
 import { NotificationComponent } from "./components/notification/notification.component";
@@ -21,7 +21,8 @@ import { NotificationComponent } from "./components/notification/notification.co
 export class AppComponent implements OnInit {
   fullName!: string;
   showSuccessModal: boolean = false;
-  apiResult!: UsersApiResponse;
+  photosResponse!: PhotosApiResponse;
+  successModel!: SuccessModel;
   errorMsg!: string;
 
   signUpForm = this.fb.group({
@@ -70,28 +71,32 @@ export class AppComponent implements OnInit {
   }
 
   private callApis() {
-    const request: PhotosApiRequest = {
-      firstName: this.f.firstName.value as string,
-      lastName: this.f.lastName.value as string,
-      email: this.f.email.value as string
-    }
+    const lastNameLength = (this.f.lastName.value as string).length;
 
-    this.jsonService.getPhotos(request)
+    this.jsonService.getPhotos(lastNameLength)
       .pipe(
         take(1),
-        switchMap(photosResponse => this.jsonService.getUsers({
-          ...request,
-          thumbnailUrl: photosResponse.thumbnailUrl
+        tap((pResp: PhotosApiResponse) => this.photosResponse = pResp),
+        switchMap((pResp: PhotosApiResponse) => this.jsonService.getUsers({
+          firstName: this.f.firstName.value as string,
+          lastName: this.f.lastName.value as string,
+          email: this.f.email.value as string,
+          thumbnailUrl: pResp.thumbnailUrl
         }))
       )
-      .subscribe(
-        result => {
-          this.apiResult = result;
+      .subscribe({
+        next: result => {
+          this.successModel = {
+            ...result,
+            albumId: this.photosResponse.albumId,
+            title: this.photosResponse.title
+          };
           this.showSuccessModal = true;
         },
-        error => {
+        error: error => {
           this.errorMsg = error;
-        });
+        }
+      });
   }
 }
 

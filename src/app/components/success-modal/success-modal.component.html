@@ -1,10 +1,12 @@
 <div #infoPopup id="success-modal" tabindex="-1"
   class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
   <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow">
-    <div class="flex flex-col items-center py-10">
-      <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="{{ result.thumbnailUrl }}" alt="thumbnail-image" />
-      <h5 class="mb-1 text-xl font-medium text-gray-900">{{ result.firstName }} {{ result.lastName }} (id: {{ result.id }})</h5>
-      <span class="text-sm text-gray-500">{{ result.email }}</span>
+    <div class="flex flex-col items-center py-10 px-8">
+      <img id="thumbnail-url" class="w-24 h-24 mb-3 rounded-full shadow-lg" src="{{ result.thumbnailUrl }}" alt="thumbnail-image" />
+      <h5 id="full-name" class="mb-1 text-xl font-medium text-gray-900">{{ result.firstName }} {{ result.lastName }}</h5>
+      <span id="email" class="text-sm text-gray-500">{{ result.email }}</span>
+      <p id="album-id" class="text-sm text-gray-500"><br><b>photo album id:</b> {{ result.albumId }}</p>
+      <p id="title" class="text-sm text-center text-gray-500"><br><b>title:</b><br>{{ result.title }}</p>
       <div class="flex mt-4 md:mt-6">
         <button id="close-modal" type="button" (click)="closeModal()"
           class="py-2 px-4 w-full text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 sm:w-auto hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10">

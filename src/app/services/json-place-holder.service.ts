@@ -2,12 +2,6 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from '@angular/core';
 import { Observable, Subject, take } from "rxjs";
 
-export interface PhotosApiRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
 export interface PhotosApiResponse {
   id: number;
   albumId: number;
@@ -16,16 +10,15 @@ export interface PhotosApiResponse {
   thumbnailUrl: string;
 }
 
-export interface UsersApiRequest extends PhotosApiRequest {
-  thumbnailUrl: string;
-}
-
-export interface UsersApiResponse {
-  id: number;
+export interface UsersApiRequest {
   firstName: string;
   lastName: string;
   email: string;
   thumbnailUrl: string;
+}
+
+export interface UsersApiResponse extends UsersApiRequest {
+  id: number;
 }
 
 @Injectable({
@@ -34,7 +27,7 @@ export interface UsersApiResponse {
 export class JsonPlaceHolderService {
   destroy$ = new Subject<void>();
 
-  readonly apiUrls = {
+  static readonly apiUrls = {
     photos: 'https://jsonplaceholder.typicode.com/photos',
     users: 'https://jsonplaceholder.typicode.com/users'
   }
@@ -42,15 +35,15 @@ export class JsonPlaceHolderService {
   constructor(private httpclient: HttpClient) {
   }
 
-  getPhotos(request: PhotosApiRequest): Observable<PhotosApiResponse> {
-    return this.httpclient.get<PhotosApiResponse>(`${this.apiUrls.photos}/${request.lastName.length}`)
+  getPhotos(lnLength: number): Observable<PhotosApiResponse> {
+    return this.httpclient.get<PhotosApiResponse>(`${JsonPlaceHolderService.apiUrls.photos}/${lnLength}`)
       .pipe(
         take(1)
       ) as Observable<PhotosApiResponse>;
   }
 
   getUsers(request: UsersApiRequest): Observable<UsersApiResponse> {
-    return this.httpclient.post<UsersApiResponse>(this.apiUrls.users, request)
+    return this.httpclient.post<UsersApiResponse>(JsonPlaceHolderService.apiUrls.users, request)
       .pipe(
         take(1)
       ) as Observable<UsersApiResponse>;
