@@ -1,11 +1,11 @@
-<app-header [fullName]="fullName"></app-header>
+<app-header [fullName]="fullName$ | async"></app-header>
 
 <form [formGroup]="signUpForm" (ngSubmit)="submitForm()" class="max-w-sm mx-auto pt-14">
   <div class="mb-5">
     <label for="firstName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">First name</label>
     <input (keyup)="updateFullName()" type="text" id="firstName" formControlName="firstName"
            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"/>
-    @if (f.firstName.invalid && (f.firstName.dirty || f.firstName.touched)) {
+    @if (controls.firstName.invalid && (controls.firstName.dirty || controls.firstName.touched)) {
     <p id="firstNameRequired" class="mt-2 text-sm text-red-600 dark:text-red-500">First name is required.</p>
     }
   </div>
@@ -14,7 +14,7 @@
       name</label>
     <input (keyup)="updateFullName()" type="text" id="lastName" formControlName="lastName"
            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"/>
-    @if (f.lastName.invalid && (f.lastName.dirty || f.lastName.touched)) {
+    @if (controls.lastName.invalid && (controls.lastName.dirty || controls.lastName.touched)) {
     <p id="lastNameRequired" class="mt-2 text-sm text-red-600 dark:text-red-500">Last name is required.</p>
     }
   </div>
@@ -22,12 +22,12 @@
     <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
     <input type="email" id="email" formControlName="email"
            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"/>
-    @if (f.email.invalid && (f.email.dirty || f.email.touched)) {
+    @if (controls.email.invalid && (controls.email.dirty || controls.email.touched)) {
     <span id="emailValidationMessages">
-      @if (f.email.errors?.['required']) {
+      @if (controls.email.errors?.['required']) {
     <p id="emailRequired" class="mt-2 text-sm text-red-600 dark:text-red-500">Email is required.</p>
     }
-    @else if (f.email.errors?.['pattern']) {
+    @else if (controls.email.errors?.['pattern']) {
     <p id="emailPattern" class="mt-2 text-sm text-red-600 dark:text-red-500">Email is not valid.</p>
     }
     </span>
@@ -37,20 +37,20 @@
     <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
     <input type="password" id="password" formControlName="password"
            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"/>
-    @if (f.password.invalid && (f.password.dirty || f.password.touched)) {
+    @if (controls.password.invalid && (controls.password.dirty || controls.password.touched)) {
     <span id="passwordValidationMessages">
-      @if (f.password.errors?.['required']) {
+      @if (controls.password.errors?.['required']) {
     <p id="passwordRequired" class="mt-2 text-sm text-red-600 dark:text-red-500">Password is required.</p>
     }
-    @else if (f.password.errors?.['minlength']) {
+    @else if (controls.password.errors?.['minlength']) {
     <p id="passwordMinLength" class="mt-2 text-sm text-red-600 dark:text-red-500">Password must contain at least 8
       characters.</p>
     }
-    @else if (f.password.errors?.['pattern']) {
+    @else if (controls.password.errors?.['pattern']) {
     <p id="passwordPattern" class="mt-2 text-sm text-red-600 dark:text-red-500">Password must contain at least 1
       lowercase and 1 uppercase letter.</p>
     }
-    @else if (f.password.errors?.['uniquePassword']) {
+    @else if (controls.password.errors?.['uniquePassword']) {
     <p id="passwordUnique" class="mt-2 text-sm text-red-600 dark:text-red-500">Password can not be the same as first
       name or last name.</p>
     }
@@ -62,15 +62,15 @@
     Submit
   </button>
 
-  @if(errorMsg) {
+  @if(errorMsg$ | async) {
     <app-notification
       [type]="'error'"
-      [message]="errorMsg"
+      [message]="errorMsg$ | async"
     ></app-notification>
   }
 </form>
 
-@if(showSuccessModal) {
+@if(showSuccessModal$ | async) {
   <app-success-modal
     id="successModal"
     [result]="successModel"

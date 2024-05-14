@@ -183,7 +183,6 @@ describe('AppComponent', () => {
       component.signUpForm.controls['lastName'].setValue('Mekrekel')
       component.signUpForm.controls['email'].setValue('bla@bla.nl')
       component.signUpForm.controls['password'].setValue('SomePassword')
-      expect(component.showSuccessModal).toBe(false);
 
       mockService.getPhotos.and.returnValue(of({
         albumId: 1,
@@ -204,7 +203,9 @@ describe('AppComponent', () => {
       button.click();
       fixture.detectChanges();
 
-      expect(component.showSuccessModal).toBe(true);
+      component.showSuccessModal$.subscribe(value => {
+        expect(value).toBe(true);
+      })
 
       const successModal = fixture.debugElement.nativeElement.querySelector('#successModal');
       expect(successModal).toBeDefined();
