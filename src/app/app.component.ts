@@ -3,12 +3,12 @@ import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core'
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {RouterOutlet} from '@angular/router';
 import {initFlowbite} from "flowbite";
-import {BehaviorSubject, Subject, switchMap, take, tap} from "rxjs";
+import {Subject, switchMap, take, tap} from "rxjs";
 import {HeaderComponent} from './components/header/header.component';
 import {SuccessModalComponent, SuccessModel} from "./components/success-modal/success-modal.component";
 import {JsonPlaceHolderService, PhotosApiResponse} from "./services/json-place-holder.service";
 import {FedexValidators} from "./validators/password-unique.validator";
-import {emailPattern, passwordPattern} from './validators/validation-patters';
+import {emailPattern, passwordPattern} from './validators/validation-patterns';
 import {NotificationComponent} from "./components/notification/notification.component";
 import {AsyncPipe} from "@angular/common";
 
